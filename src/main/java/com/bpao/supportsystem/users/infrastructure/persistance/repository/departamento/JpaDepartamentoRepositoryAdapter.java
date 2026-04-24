@@ -17,8 +17,15 @@ public class JpaDepartamentoRepositoryAdapter implements DepartamentoRepositoryP
 
     @Override
     public Departamento save(Departamento departamento) {
+        log.info("Inicio del método save en JpaDepartamentoRepositoryAdapter(infrastructure)");
         var departamentoEntity = departamentoPersistenceMapper.toEntity(departamento);
         var newDepartamentoEntity = springDataDepartamentoRepository.save(departamentoEntity);
         return departamentoPersistenceMapper.toDomain(newDepartamentoEntity);
+    }
+
+    @Override
+    public boolean existsByName(String nombre) {
+        log.info("Inicio del método existsByName en JpaDepartamentoRepositoryAdapter(infrastructure)");
+        return springDataDepartamentoRepository.existsByNombreDeptoIgnoreCase(nombre);
     }
 }

@@ -20,7 +20,6 @@ public class DepartamentoPersistenceMapper {
     // Convierte de Modelo (Negocio) a Entidad (Oracle)
     public DepartamentoEntity toEntity(Departamento domain) {
         if (domain==null) return null;
-
         return DepartamentoEntity.builder()
                 .idDepartamento(domain.getId())
                 .nombreDepto(domain.getNombre())
