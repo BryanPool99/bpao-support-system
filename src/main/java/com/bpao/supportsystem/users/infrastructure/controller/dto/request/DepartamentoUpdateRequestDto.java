@@ -1,6 +1,5 @@
 package com.bpao.supportsystem.users.infrastructure.controller.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -8,9 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DepartamentoCreateRequestDto {
-    @NotBlank(message = "El nombre del departamento no debe estar en blanco")
+public class DepartamentoUpdateRequestDto {
     private String name;
-
     private Boolean isActive;
 }

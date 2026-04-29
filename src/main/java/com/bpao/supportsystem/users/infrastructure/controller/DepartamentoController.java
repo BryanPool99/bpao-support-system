@@ -2,24 +2,30 @@ package com.bpao.supportsystem.users.infrastructure.controller;
 
 import com.bpao.supportsystem.common.domain.model.PageResponse;
 import com.bpao.supportsystem.users.application.port.in.departamento.CreateDepartamentoUseCase;
+import com.bpao.supportsystem.users.application.port.in.departamento.DeleteDepartamentoUseCase;
 import com.bpao.supportsystem.users.application.port.in.departamento.RetrieveDepartamentoUseCase;
+import com.bpao.supportsystem.users.application.port.in.departamento.UpdateDepartamentoUseCase;
 import com.bpao.supportsystem.users.infrastructure.controller.dto.request.DepartamentoCreateRequestDto;
+import com.bpao.supportsystem.users.infrastructure.controller.dto.request.DepartamentoUpdateRequestDto;
 import com.bpao.supportsystem.users.infrastructure.controller.dto.response.DepartamentoCreateResponseDto;
 import com.bpao.supportsystem.users.infrastructure.controller.dto.response.DepartamentoResponseDto;
 import com.bpao.supportsystem.users.infrastructure.controller.mapper.DepartamentoWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/departamento")
+@RequestMapping("/api/v1/departamentos")
 @RequiredArgsConstructor
 public class DepartamentoController {
 
     private final CreateDepartamentoUseCase createDepartamentoUseCase;
     private final RetrieveDepartamentoUseCase retrieveDepartamentoUseCase;
+    private final UpdateDepartamentoUseCase updateDepartamentoUseCase;
+    private final DeleteDepartamentoUseCase deleteDepartamentoUseCase;
     private final DepartamentoWebMapper departamentoWebMapper;
 
     @GetMapping
@@ -28,11 +34,9 @@ public class DepartamentoController {
             @RequestParam(defaultValue = "10") int size
     ) {
         var domainPage = retrieveDepartamentoUseCase.getDepartamentoAllPaginated(page, size);
-        // Mapeamos el contenido de la página a DTOs de respuesta
         List<DepartamentoResponseDto> responseDtos = domainPage.getData().stream()
                 .map(departamentoWebMapper::toResponseDto)
                 .toList();
-        // Creamos la respuesta paginada para el frontend
         return new PageResponse<>(
                 responseDtos,
                 domainPage.getPageNumber(),
@@ -43,16 +47,35 @@ public class DepartamentoController {
         );
     }
 
+    @GetMapping("/{id}")
+    public DepartamentoResponseDto getDepartamentoById(@PathVariable Integer id) {
+        var domainDepartamento = retrieveDepartamentoUseCase.getDepartamentoById(id);
+        return departamentoWebMapper.toResponseDto(domainDepartamento);
+    }
+
     @PostMapping
     public DepartamentoCreateResponseDto createDepartamento(
             @Valid @RequestBody DepartamentoCreateRequestDto requestDto
     ) {
-        // 1. Usamos el webMapper para entrar al dominio
-        var domainDepartamento = departamentoWebMapper.creteRequestToDomain(requestDto);
-        // 2. Ejecutamos lógica
-        var createDepartamento = createDepartamentoUseCase.createDepartamento(domainDepartamento);
-        // 3. Usamos el webMapper para salir hacia el JSON
-        return departamentoWebMapper.toCreateResponseDto(createDepartamento);
+        var domainDepartamento = departamentoWebMapper.createRequestToDomain(requestDto);
+        var createdDepartamento = createDepartamentoUseCase.createDepartamento(domainDepartamento);
+        return departamentoWebMapper.toCreateResponseDto(createdDepartamento);
     }
 
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public DepartamentoResponseDto patchDepartamento(
+            @PathVariable Integer id,
+            @Valid @RequestBody DepartamentoUpdateRequestDto requestDto
+    ) {
+        var partialDomain = departamentoWebMapper.updateRequestToDomain(requestDto);
+        var updatedDepartamento = updateDepartamentoUseCase.patchDepartamento(id, partialDomain);
+        return departamentoWebMapper.toResponseDto(updatedDepartamento);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteDepartamento(@PathVariable Integer id) {
+        deleteDepartamentoUseCase.deleteDepartamento(id);
+    }
 }

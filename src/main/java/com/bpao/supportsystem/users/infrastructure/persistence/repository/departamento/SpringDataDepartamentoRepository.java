@@ -1,6 +1,6 @@
-package com.bpao.supportsystem.users.infrastructure.persistance.repository.departamento;
+package com.bpao.supportsystem.users.infrastructure.persistence.repository.departamento;
 
-import com.bpao.supportsystem.users.infrastructure.persistance.entity.DepartamentoEntity;
+import com.bpao.supportsystem.users.infrastructure.persistence.entity.DepartamentoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SpringDataDepartamentoRepository extends JpaRepository<DepartamentoEntity, Integer> {

@@ -9,4 +9,8 @@ public interface DepartamentoRepositoryPort {
     boolean existsByName(String nombre);
 
     PageResponse<Departamento> findAll(int page, int size);
+
+    Departamento findById(Integer id);
+
+    void deleteById(Integer id);
 }
